@@ -1,0 +1,48 @@
+namespace Splitit.Automation.NG.Backend.Services.Chargebacks.Responses;
+
+public class GetChargebacksIdResponse
+{
+    public class Chargeback
+    {
+        public string ReasonCode { get; set; }
+        public List<Evidence> Evidences { get; set; }
+        public List<object> Comments { get; set; }
+        public string Id { get; set; }
+        public DateTime DisputeCreatedDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public string InstallmentPlanNumber { get; set; }
+        public int InstallmentNumber { get; set; }
+        public string PlanStatus { get; set; }
+        public string TransactionId { get; set; }
+        public string MerchantName { get; set; }
+        public TotalPlanAmount TotalPlanAmount { get; set; }
+        public DisputeAmount DisputeAmount { get; set; }
+        public string Status { get; set; }
+        public DateTime PlanActivatedDate { get; set; }
+    }
+
+    public class DisputeAmount
+    {
+        public double Amount { get; set; }
+        public string CurrencyCode { get; set; }
+    }
+    
+    public class Evidence
+    {
+        public string EvidenceId { get; set; }
+        public DateTime UploadedAt { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+    }
+
+    public class Root
+    {
+        public Chargeback Chargeback { get; set; }
+    }
+
+    public class TotalPlanAmount
+    {
+        public double Amount { get; set; }
+        public string CurrencyCode { get; set; }
+    }
+}
