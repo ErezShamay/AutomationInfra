@@ -1,0 +1,41 @@
+"","Merchant Setup","","","","","","","","","","","","SKU Per Plan Setup","","","","Acticity on Settlment Report ","","","","","","","","",""
+" SKUs","Monetary Flow","Settlement Type","Funding On Hold","Debit OnHold","Risk Rating","Credit Line","Reserve Pool","Funding End Date","Funding Start Date","Funding Triggers
+(In Progress)","IsActive","FundNonSecuredPlans","Number Of Installments","Scheduled Interval","Card Type","Set First Installment ","Acticity On Payments","Activity  Description","Activity Merchant Facing","NOTES
+(sign)","Notes/Steps","Gross Settlement Amount","Variable Fee","Fixed Fee","Net Settlement Amount=
+Gross Settlement Amount-Total Fees-TAX ","Notes"
+"UNFUNDED SKUs","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"MER- UNF- STL- MON- FTR- CRC- U01","MER","GrossSettle ","FALSE","FALSE","null","0","0","null","null","none","true  ","NA","1","Monthly","CRC","STL","COL","Instalment Collection","Instalment Collection","NEGATIVE (Fee Only)","","0","1.6","0.4","","Gross Settlement Amount is zero when plan unfunded"
+"MER- UNF- STL- MON- FTR- CRC- U03","MER","GrossSettle ","FALSE","FALSE","null","0","0","null","null","none","true  ","NA","3","Monthly","CRC","STL","COL","Instalment Collection","Instalment Collection","NEGATIVE (Fee Only)","","0","1.6","0.4","","Gross Settlement Amount is zero when plan unfunded"
+"MER- UNF- STL- MON- FTR- CRC- U05","MER","GrossSettle ","FALSE","FALSE","null","0","0","null","null","none","true  ","NA","5","Monthly","CRC","STL","COL","Instalment Collection","Instalment Collection","NEGATIVE (Fee Only)","","0","1.6","0.4","","Gross Settlement Amount is zero when plan unfunded"
+"FUNDED SKUs","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"MER- FUN- STL- MON- FTR- CRC- F01","MER","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","1","Monthly","CRC","STL","FND+COL","Fund Action
+Instalment Collection","New Plan
+Instalment Collection","FND=POSITIVE+COL=NEGATIVE","create plan","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F03","MER","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","3","Monthly","CRC","STL","FND+COL","Fund Action
+Instalment Collection","New Plan
+Instalment Collection","FND=POSITIVE+COL=NEGATIVE","create plan","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F07","MER","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","5","Monthly","CRC","STL","RED+REF","Refund- Reduced Plan Amount - Non-Cash Refund (RED)
+","Refund","RED=NEGATIVE","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund:
+    - from past charge first
+    - last installment
+3. go to mongo and see that RED activity was created with status ""new""
+4. invoice all records (FND, COL and RED)","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F01","MER","GrossSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","1","Monthly","CRC","STL","FND+COL","Fund Action","New Plan","FND=POSITIVE+COL=NEGATIVE","create plan","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F03","MER","GrossSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","3","Monthly","CRC","STL","FND+COL","Fund Action","New Plan","FND=POSITIVE+COL=NEGATIVE","create plan","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F07","MER","GrossSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","5","Monthly","CRC","STL","RED","Refund- Reduced Plan Amount - Non-Cash Refund (RED)","Refund","RED=NEGATIVE","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund:
+    - last installment
+3. go to mongo and see that RED activity was created with status ""new""
+4. invoice all records (FND, COL and RED)","0","1.5","0.5","",""
+"DBS- FUN- STL- MON- FTR- CRC- F04","DBS","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","6","Monthly","CRC","STL","FND+COL","Fund Action","New Plan","FND=POSITIVE+COL=NEGATIVE","create plan ","0","1.5","0.5","",""
+"DBS- FUN- STL- MON- FTR- CRC- F05","DBS","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","6","Monthly","CRC","STL","REF+ RED","Refund- cash refund (REF)
+Refund- Reduced Plan Amount - Non-Cash Refund (RED)","Refund","RED=NEGATIVE+REF=NEGATIVE","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund:
+    - last installment
+3. go to mongo and see that RED activity was created with status ""new""
+4. invoice all records (FND, COL, REF and RED)","0","1.5","0.5","",""
+"DBS- FUN- STL- MON- FTR- CRC- F06","DBS","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","6","Monthly","CRC","STL","RED","Refund- Reduced Plan Amount - Non-Cash Refund (RED)","Refund","POSITIVE (-Fees)","","0","1.5","0.5","",""
+"DBS- FUN- STL- MON- FTR- CRC- F07","DBS","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","6","Monthly","CRC","STL","CBH","Dispute- Chargeback Collection (CHB)","Dispute","NEGATIVE(-Fees)","","0","1.5","0.5","",""
+"DBS- FUN- STL- MON- FTR- CRC- F08","DBS","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","6","Monthly","CRC","STL","RPR","DisputeReverse -Representment Remittance (RPR)","DisputeReverse","POSITIVE","","0","1.5","0.5","",""
+"MER- FUN- STL- MON- FTR- CRC- F05","MER","NetSettle","FALSE","FALSE","Low","9999999999","0","null","ISODate(""2023-03-29T00:00:00.000+0000"")","PlanActivation","true  ","NA","5","Monthly","CRC","STL","FND+COL+RED","Fund Action","New Plan","FND=POSITIVE+COL=NEGATIVE","create plan","0","1.5","0.5","",""
