@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Sandbox": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Sandbox",
+        "Environment": "sandbox",
+        "UseIAM": "False",
+        "RedisServerUrl": "sandbox.vbepkb.ng.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.sandbox.splitit.com",
+        "TranslationApiUrl": "https://translations.sandbox.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.sandbox.splitit.com/api/Gateway/",
+        "SplititServiceEndpoints:StaticContentApi:InternalUrl": "https://static-content.sandbox.splitit.com",
+        "ReportsApiDockerUrl": "http://localhost:44311",
+        "WebApiDockerUrl": "https://webapi.sandbox.splitit.com",
+        "FxServiceBaseUrl": "https://fx.sandbox.splitit.com",
+        "AdminApiDockerUrl": "https://api-admin.sandbox.splitit.com",
+        "AppName": "merchants.payments.api",
+        "SubscribeToPaymentEvents": "false",
+        "SplititServiceEndpoints:AdminApi:InternalUrl": "https://api-admin.sandbox.splitit.com"
+      }
+    },
+    "Beta": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Beta",
+        "Environment": "beta",
+        "RedisServerUrl": "beta.vbepkb.ng.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.beta.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.beta.splitit.com/api/Gateway/",
+        "SubscribeToPaymentEvents": "false",
+        "SplititServiceEndpoints:AdminApi:InternalUrl": "https://api-admin.beta.splitit.com"
+      }
+    },
+    "Production": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "Environment": "prod",
+        "RedisServerUrl": "prod.sg9wyq.ng.0001.use1.cache.amazonaws.com:6379",
+        "WebApiDockerUrl": "https://webapi.production.splitit.com",
+        "IdentityServerUrlHttp": "https://id.production.splitit.com",
+        "ConnectionString": "Data Source=rds-prod-readonly.c9pha3sjydga.us-east-1.rds.amazonaws.com;Initial Catalog=PIS-PROD;User ID=admin;Password=AXrJXrVADAmp2MtWOLuz;MultipleActiveResultSets=True;Connection CancelAfter=600;TrustServerCertificate=True;",
+        "SubscribeToPaymentEvents": "false"
+      }
+    },
+    "Dev1": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQL_TRACE": "false",
+        "Environment": "dev1",
+        "RedisServerUrl": "dev1.ln9ppt.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.dev1.splitit.com",
+        "WebApiDockerUrl": "https://webapi.dev1.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.dev1.splitit.com/api/Gateway/",
+        "TranslationApiUrl": "https://translations.dev1.splitit.com",
+        "SubscribeToPaymentEvents": "false"
+      }
+    },
+    "Dev2": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQL_TRACE": "false",
+        "Environment": "dev2",
+        "RedisServerUrl": "dev2.ln9ppt.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.dev2.splitit.com",
+        "WebApiDockerUrl": "https://webapi.dev2.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.dev2.splitit.com/api/Gateway/",
+        "TranslationApiUrl": "https://translations.dev2.splitit.com",
+        "SubscribeToPaymentEvents": "false"
+      }
+    },
+    "Dev3": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQL_TRACE": "false",
+        "Environment": "dev3",
+        "RedisServerUrl": "dev3.ln9ppt.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.dev3.splitit.com",
+        "WebApiDockerUrl": "https://webapi.dev3.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.dev3.splitit.com/api/Gateway/",
+        "TranslationApiUrl": "https://translations.dev3.splitit.com",
+        "SubscribeToPaymentEvents": "false"
+      }
+    },
+    "Dev4": {
+      "commandName": "Project",
+      "launchUrl": "",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SQL_TRACE": "false",
+        "Environment": "dev4",
+        "RedisServerUrl": "dev4.ln9ppt.0001.use1.cache.amazonaws.com:6379",
+        "IdentityServerUrlHttp": "https://id.dev4.splitit.com",
+        "WebApiDockerUrl": "https://webapi.dev4.splitit.com",
+        "PaymentGatewayApiBaseUrl": "https://gatewayapi.dev4.splitit.com/api/Gateway/",
+        "TranslationApiUrl": "https://translations.dev4.splitit.com",
+        "SubscribeToPaymentEvents": "false"
+      }
+    }
+  }
+}
