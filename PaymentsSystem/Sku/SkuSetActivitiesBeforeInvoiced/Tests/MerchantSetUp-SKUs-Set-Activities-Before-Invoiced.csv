@@ -1,0 +1,454 @@
+,Merchant Setup,,,,,,,,,,,SKU Per Plan Setup,,,,Activity ,,
+ SKU,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,Funding End Date,Funding Start Date,"Funding Triggers
+(In Progress)",IsActive,FundNonSecuredPlans,Number Of Installments,Scheduled Interval,Card Type,Set First Installment ,"Activity Type- 
+Before Invoice",Steps,Notes
+MER- UNF- STL- MON- FTR- CRC- U03,MER,FALSE,FALSE,null,0,0,null,null,none,true ,NA,2-3,Monthly,CRC,STL,DEL,"1. create unfunded plan and verify COL record was created with status ""new""
+2. open plan's merchant setup and change setup to be funded setup> update the following: 
+   - credit line: 99999
+   - funding start date: current date
+   - funding trigger: PlanActivation/ Shipment
+3. go to merchant payments> plan details and open the plan
+4. click on ""move to funded"" button 
+https://payments.sandbox.splitit.com/api/splitit-operations/move-plan-to-fnd
+POST
+payload: installmentPlanNumbers
+5. see new DEL activity was created
+6  see new COL activities was created with FUN in second segment
+",
+FUNDED SKUs,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,Funding End Date,Funding Start Date,"Funding Triggers
+(In Progress)",IsActive,FundNonSecuredPlans,Number Of Installments,Scheduled Interval,Card Type,Set First Installment ,"Activity Type- 
+Before Invoice",Steps,Notes
+MER- FUN- STL- MON- FTR- CRC- F01,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,DEL,"1. create funded plan and verify COL and FND records were created with status ""new""
+2. go to merchant payments> plan details and open the plan
+3. click on ""move to standard"" button
+https://payments.sandbox.splitit.com/api/splitit-operations/move-plan-to-std
+POST
+payload: installmentPlanNumbers
+4. see new DEL activity was created on mongo with status ""new"" and previous activities' status changed to ""skipped""
+5. see new COL activities was created with UNF in second segment","""Move to standartd"" can be done only on MER merchants"
+MER- FUN- STL- MON- FTR- CRC- F01,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund:
+    - from past charge first
+    - oustanding balance firs
+    - last installment
+3. go to mongo and see that REF activity was created with status ""new""",
+MER- FUN- STL- MON- FTR- CRC- F03,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,2-3,Monthly,CRC,STL,DEL,"1. create funded plan and verify COL and FND records were created with status ""new""
+2. go to merchant payments> plan details and open the plan
+3. click on ""move to standard"" button
+https://payments.sandbox.splitit.com/api/splitit-operations/move-plan-to-std
+POST
+payload: installmentPlanNumbers
+4. see new DEL activity was created on mongo with status ""new"" and previous activities' status changed to ""skipped""
+5. see new COL activities was created with UNF in second segment","""Move to standartd"" can be done only on MER merchants"
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,null,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"RED+DEL
+","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that RED activity was created with status ""new""
+4. run the processing request on swagger
+5. see new DEL activity was created and previous activities' status changed to ""skipped""
+6. see new COL activity was created with UNF in second segment",
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund (from past charge first)
+3. go to mongo and see that REF activity was created with status ""new""",
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+13. see RED activity was created with status ""New""
+14. run the processing request on swagger
+15. see new DEL activity was created with status ""Pending Batch""
+16. see new COL and FND activities was created with status ""New"" and marked isDeleted-true
+17. PendingDeletion on “Plan_PaymentSetting” is “true”
+18. Set DEL record as “Acknowledged"" and verify : 
+    a. New FND, COL and DEL records are created and are marked isDeleted-false
+    b. PendingDeletion on “Plan_PaymentSetting” is “false”
+    c. Old FND, COL and RED are marked isDeleted-true
+    d. Run processing request and see that new FND and COL changed to ""Pending Batch”
+    e. Perform next capture on the plan - new COL record is created with status new and marked isDeleted-false
+post: https://web-api-sandbox.splitit.com/api/InstallmentPlan/Charge?format=json
+body: { ""InstallmentPlanNumber"": ""*****""}",
+MER- FUN- STL- MON- FTR- DRC- F12,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,DRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+13. see RED activity was created with status ""New""
+14. run the processing request on swagger
+15. see new DEL activity was created with status ""Pending Batch""
+16. see new COL and FND activities was created with status ""New"" and marked isDeleted-true
+10. PendingDeletion on “Plan_PaymentSetting” is “true”
+17. Set DEL record as “AcknowledgedWithError"" and verify : 
+    a. New FND, COL records are marked isDeleted-true
+    b. PendingDeletion on “Plan_PaymentSetting” is “false”
+    c. Old FND, COL, RED and DEL are marked isDeleted-false
+    d. Invoice original FND and COL
+    e. Run processing request and see old RED moves from NEW to PENDING BATCH
+18. Perform next capture on the plan - new COL record is created with status new and marked isDeleted-false
+post: https://web-api-sandbox.splitit.com/api/InstallmentPlan/Charge?format=json
+body: { ""InstallmentPlanNumber"": ""*****""}
+
+
+","open the plan on mongo and see that on plan_paymentsetting the pending deletion is ""true"""
+MER- FUN- STL- MON- FTR- DRC- F12,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,DRC,STL,DEL,"1. Create funded plan and verify COL and FND records were created with status ""new""
+2. Set FND and COL records to be “Acknowledged”
+3. PendingDeletion on “Plan_PaymentSetting” is “false”
+4. Perform a full refund 
+5. RED record is created with status “New”
+6. Run processing request and verify : 
+         a. DEL record is created with status “Pending Batch” and isDeleted-false
+         b. New COL records are created with status “new” and marked isDeleted-true and SKU if UNF
+         c. PendingDeletion on “Plan_PaymentSetting” is “true”
+         d. Old FND, COL, and RED are marked isDeleted-false
+7. Set DEL record as “Acknowledged"" and verify :
+          a. PendingDeletion on “Plan_PaymentSetting” is “false”
+          b. Old FND, COL, and RED are marked isDeleted-true
+          c. New COL record is created with status ""New"" and marked isDeleted-false and creates new UNF SKU
+          d. Run processing
+          e. New COL moves from ‘New’ to ‘Pending Batch’
+
+",
+MER- FUN- STL- MON- FTR- DRC- F12,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,DRC,STL,DEL,"1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. PendingDeletion on “Plan_PaymentSetting” is “false”
+13. Perform a full refund 
+14. RED record is created with status “New”
+15. Run processing request and Verify: 
+     a. DEL record is created with status “Pending Batch”
+     b. New COL records are created with status “new” and marked isDeleted-true and SKU if UNF
+     c. PendingDeletion on “Plan_PaymentSetting” is “true”
+     d. Old FND, COL, and RED are marked isDeleted-false
+16. Set DEL record as “Acknowledged with error"" and verify :
+     a. PendingDeletion on “Plan_PaymentSetting” is “false”
+     b. Old FND, COL, and RED are marked isDeleted-”false”
+     c. New COL records are marked isDeleted-true
+     d. Processing
+     e. Old RED moves from NEW to ‘Pending Batch’
+
+",
+Terminal- BlueSnap MOR,,,,,,,,,,,,,,,,,,
+DBS- FUN- STL- MON- FTR- CRC- F01,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that REF activity was created with status ""new""",
+DBS- FUN- STL- MON- FTR- CRC- F01,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund (from past charge first)
+3. go to mongo and see that REF activity was created with status ""new""",
+DBS- FUN- STL- MON- FTR- CRC- F03,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,2-3,Monthly,CRC,STL,"RED+DEL
+","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund: 
+   - oustanding balance first
+   - last installment
+3. go to mongo and see that RED activity was created with status ""new""
+4. run the processing request on swagger
+5. see new DEL activity was created and previous activities' status changed to ""skipped""",
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,CHB+ RPR,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. send a chargeback request on postman (written in notes column)
+3. in request body change relavant data and send the request:   
+   - reversalRefNum- rendom 12-22 digits number (should be unique for every new dispute)
+   - reversalReason- Chargeback_Merchant_Liability
+   - referenceNumber- captured transaction id 
+   - invoiceAmount- negative installment amount
+   - Status- NEW
+4. on admin portal- go to chargeback> open relevant plan> click on ""set liability"" button, select ""merchant"" and click ""ok""
+5. on mongo- verify new CHB activity was created 
+6. wait 120 seconds and send the chargeback request again but change the status to ""Completed_Won""
+7. on mongo- verify new PRP activity was created","Chargeback activities must me done on BlueSnap MOR
+
+POST request URL: 
+https://notifications.sandbox.splitit.com/api/notifications/bluesnap
+
+request body:
+title=Mabas&transactionType=CHARGEBACK&untilDate=05/25/2023 08:55 AM&reversalRefNum=125021707220202590087611&reversalReason=Chargeback_Merchant_Liability&referenceNumber=1059292742&invoiceAmount=-500&transactionDate=05/30/2023 07:25&cbStatus=NEW"
+DBS- FUN- STL- BIW- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Fortnightly,CRC,STL,CHB+ RPR,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. send a chargeback request on postman (written in notes column)
+3. in request body change relavant data and send the request:   
+   - reversalRefNum- rendom 12-22 digits number (should be unique for every new dispute)
+   - reversalReason- Chargeback_Merchant_Liability
+   - referenceNumber- captured transaction id 
+   - invoiceAmount- negative installment amount
+   - Status- NEW
+4. on admin portal- go to chargeback> open relevant plan> click on ""set liability"" button, select ""merchant"" and click ""ok""
+5. on mongo- verify new CHB activity was created 
+6. wait 120 seconds and send the chargeback request again but change the status to ""Completed_Won""
+7. on mongo- verify new PRP activity was created","Chargeback activities must me done on BlueSnap MOR
+
+POST request URL: 
+https://notifications.sandbox.splitit.com/api/notifications/bluesnap
+
+request body:
+title=Mabas&transactionType=CHARGEBACK&untilDate=05/25/2023 08:55 AM&reversalRefNum=125021707220202590087611&reversalReason=Chargeback_Merchant_Liability&referenceNumber=1059292742&invoiceAmount=-500&transactionDate=05/30/2023 07:25&cbStatus=NEW"
+DBS- FUN- STL- MON- FTR- CRC- F12,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,REF+RED+DEL,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund 
+3. go to mongo and see that REF activity was created with status ""new""
+4. go to mongo and see that RED activity was created with status ""new""
+5. run the processing request on swagger
+6. go to mongo and see that DEL activity was created and previous activities' status changed to ""skipped""",
+PCO- FUN- STL- MON- FTR- CRC- F01,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that REF activity was created with status ""new""
+4. go to mongo and see that RED activity was created with status ""new""
+5. run the processing request on swagger
+6. go to mongo and see that DEL activity was created with status ""new"" and previous activities' status changed to ""skipped""",
+PCO- FUN- STL- MON- FTR- CRC- F01,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund (from past charge first)
+3. go to mongo and see that REF activity was created with status ""new""",
+PCO- FUN- STL- MON- FTR- CRC- F06,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+13. see RED activity was created with status ""New""
+14. run the processing request on swagger
+15. see new DEL activity was created with status ""Pending Batch""
+16. see new COL and FND activities was created with status ""New"" and marked isDeleted-true
+17. PendingDeletion on “Plan_PaymentSetting” is “true”
+18. Set DEL record as “Acknowledged"" and verify : 
+    a. New FND, COL and DEL records are created and are marked isDeleted-false
+    b. PendingDeletion on “Plan_PaymentSetting” is “false”
+    c. Old FND, COL and RED are marked isDeleted-true
+    d. Run processing request and see that new FND and COL changed to ""Pending Batch”
+    e. Perform next capture on the plan - new COL record is created with status new and marked isDeleted-false
+post: https://web-api-sandbox.splitit.com/api/InstallmentPlan/Charge?format=json
+body: { ""InstallmentPlanNumber"": ""*****""}","open the plan on mongo and see that on plan_paymentsetting the pending deletion is ""true"""
+PCO- FUN- STL- MON- FTR- CRC- F06,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+13. see RED activity was created with status ""New""
+14. run the processing request on swagger
+15. see new DEL activity was created with status ""Pending Batch""
+16. see new COL and FND activities was created with status ""New"" and marked isDeleted-true
+17. PendingDeletion on “Plan_PaymentSetting” is “true”
+18. Set DEL record as “AcknowledgedWithError"" and verify : 
+    a. New FND, COL records are marked isDeleted-true
+    b. PendingDeletion on “Plan_PaymentSetting” is “false”
+    c. Old FND, COL, RED and DEL are marked isDeleted-false
+    d. Invoice original FND and COL
+    e. Run processing request and see old RED moves from NEW to PENDING BATCH
+19. Perform next capture on the plan - new COL record is created with status new and marked isDeleted-false
+post: https://web-api-sandbox.splitit.com/api/InstallmentPlan/Charge?format=json
+body: { ""InstallmentPlanNumber"": ""*****""}","open the plan on mongo and see that on plan_paymentsetting the pending deletion is ""true"""
+PCO- FUN- STL- MON- FTR- CRC- F06,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,DEL,"1. Create funded plan and verify COL and FND records were created with status ""new""
+2. Set FND and COL records to be ""Acknowledged”
+3. PendingDeletion on “Plan_PaymentSetting” is “false”
+4. Perform a full refund 
+5. REF  record is created with status “New”
+6. RED record is created with status “New”
+7. Run processing request and verify:  
+    a. DEL record is created with status “Pending Batch”
+    b. PendingDeletion on “Plan_PaymentSetting” is “true”
+    c. FND, COL, and RED and REF are marked isDeleted-false
+8. Set DEL record as “Acknowledged"" and verify :
+    a. PendingDeletion on “Plan_PaymentSetting” is “false”
+    b. FND, COL, and RED are marked isDeleted-”true”
+",
+PCO- FUN- STL- MON- FTR- CRC- F06,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,DEL,"1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. PendingDeletion on “Plan_PaymentSetting” is “false”
+13. Perform a full refund 
+14. REF  record is created with status “New” and isDeleted ‘false’
+15. RED record is created with status “New” and isDeleted ‘false’
+16. Run processing request and verify:
+    a. DEL record is created with status “Pending Batch” and isDeleted ‘false’
+    b. PendingDeletion on “Plan_PaymentSetting” is “true”
+    c. FND, COL, and RED and REF are marked isDeleted-false
+17. Set DEL record as “Acknowledged with Error"" and verify :
+    a. PendingDeletion on “Plan_PaymentSetting” is “false”
+    b. FND, COL, REF and RED are marked isDeleted-”false”
+18. Invoice FND and COL
+19. Run processing request
+20. Verify RED and REF move from 'New' to 'Pending Batch'
+ ",
+PCO- FUN- STL- MON- FTR- CRC- F12,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,REF+RED+DEL,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that REF activity was created with status ""new""
+4. go to mongo and see that RED activity was created with status ""new""
+5. run the processing request on swagger
+6. go to mongo and see that DEL activity was created and previous activities' status changed to ""skipped""",
+DPL- FUN- STL- MON- FTR- DRC- F01,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,DRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that REF activity was created with status ""new""",
+DPL- FUN- STL- BIW- FTR- DRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Fortnightly,DRC,STL,REF,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a partial refund (from past charge first)
+3. go to mongo and see that REF activity was created with status ""new""",
+DPL- FUN- STL- MON- FTR- CRC- F09,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF+RED+DEL,"1. create a funded plan and verify COL and FND records were created with status ""new""
+2. perform a full refund
+3. go to mongo and see that REF activity was created with status ""new""
+4. go to mongo and see that RED activity was created with status ""new""
+5. run the processing request on swagger
+6. go to mongo and see that DEL activity was created ",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"RED+DEL
+","1. create a funded plan and verify COL and FND records were created with status ""new""
+2. verify COL and FND records were created with status ""new""
+3. perform a partial refund: 
+   - oustanding balance first
+   - last installment
+4. go to mongo and see that RED activity was created with status ""new""
+5. run the processing request on swagger
+6. see new DEL activity was created with status ""skipped""
+7. verify old COL and FND (before DEL) has status ""new""
+8. verify new COL and FND records were created 
+9. run the processing request on swagger
+10. verify new COL's status changed to ""pending batch""",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+13. see RED activity was created with status ""New""
+14. run the processing request on swagger
+15. see new DEL activity was created with status ""Pending Batch""
+16. see new COL and FND activities was created with status ""New"" and marked isDeleted-true
+17. PendingDeletion on “Plan_PaymentSetting” is “true”
+18. Set DEL record as “Acknowledged"" and verify : 
+    a. New FND, COL and DEL records are created and are marked isDeleted-false
+    b. PendingDeletion on “Plan_PaymentSetting” is “false”
+    c. Old FND, COL and RED are marked isDeleted-true
+    d. Run processing request and see that new FND and COL changed to ""Pending Batch”
+    e. Perform next capture on the plan - new COL record is created with status new and marked isDeleted-false
+post: https://web-api-sandbox.splitit.com/api/InstallmentPlan/Charge?format=json
+body: { ""InstallmentPlanNumber"": ""*****""}",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"RED+DEL
+","1. create a plan for relevant SKU and verify COL and FND records were created with status ""new""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. PendingDeletion on “Plan_PaymentSetting” is “false”
+13. Perform a full refund 
+14. REF  record is created with status “New” and isDeleted ‘false’
+15. RED record is created with status “New” and isDeleted ‘false’
+16. Run processing request and verify:
+    a. DEL record is created with status “Pending Batch” and isDeleted ‘false’
+    b. PendingDeletion on “Plan_PaymentSetting” is “true”
+    c. FND, COL, and RED and REF are marked isDeleted-false
+17. Set DEL record as “Acknowledged with Error"" and verify :
+    a. PendingDeletion on “Plan_PaymentSetting” is “false”
+    b. FND, COL, REF and RED are marked isDeleted-”false”
+18. Invoice FND and COL
+19. Run processing request
+20. Verify RED and REF move from 'New' to 'Pending Batch'
+ ",

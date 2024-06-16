@@ -1,0 +1,681 @@
+,Merchant Setup,,,,,,,,,,,SKU Per Plan Setup,,,,Activity ,,
+FUNDED SKUs,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,Funding End Date,Funding Start Date,"Funding Triggers
+(In Progress)",IsActive,FundNonSecuredPlans,Number Of Installments,Scheduled Interval,Card Type,Set First Installment ,"Activity Type- 
+After Invoice",Steps,Notes
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,null,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",none,true ,NA,4-6,Monthly,CRC,STL,"RED
+","1. create a funded plan
+2 run processing request Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger>Payments Operations> create-payment-invoice
+5. in request body insert:
+   externalInvoicedId: string (any value)
+6. run the request
+7. open Swagger>Payments Operations> invoiced
+8. in request body insert:
+    paymentRecordId: insert FND record's id
+    invoiceId: the invoice id from create-payment-invoice
+9. run the request
+10. verify record's status changed to ""Invoiced""
+11. perform a full refund: 
+12. go to mongo and see that RED activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF,"1. create a funded plan
+2. perform a partial refund (from past charge first)
+3. go to mongo and see that REF activity was created with status ""new""",
+MER- FUN- STL- MON- FTR- DRC- F12,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,DRC,STL,"RED
+","1. create a funded plan
+2 run processing request Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger>Payments Operations> create-payment-invoice
+5. in request body insert:
+   externalInvoicedId: string (any value)
+6. run the request
+7. open Swagger>Payments Operations> invoiced
+8. in request body insert:
+    paymentRecordId: insert FND record's id
+    invoiceId: the invoice id from create-payment-invoice
+9. run the request
+10. verify record's status changed to ""Invoiced""
+11. perform a partial refund: 
+   - oustanding balance first
+   - last installment
+12. go to mongo and see that RED activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+MER- FUN- STL- MON- FTR- DRC- F12,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,DRC,STL,DEL,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+ in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+16 open Swagger>Payments Operations> invoiced
+in request body insert:
+    a. paymentRecordId: insert FND and COL records id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+16 . Do partial refund ( oustanding balance first/ last installment)
+17. See RED record is created",
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,Low,999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,DEL,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+16 open Swagger>Payments Operations> invoiced
+in request body insert:
+    a. paymentRecordId: insert FND and COL records id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+16 . Do Full refund
+17. See RED and REF records are created",
+Terminal- BlueSnap MOR,,,,,,,,,,true ,NA,,,,,,,
+DBS- FUN- STL- MON- FTR- CRC- F01,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,RED,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. Do a partial refund (oustanding balance first/ last installment)
+18. See RED record is created ",
+DBS- FUN- STL- MON- FTR- CRC- F01,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund- past charge
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DBS- FUN- STL- MON- FTR- CRC- F03,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,2-3,Monthly,CRC,STL,"REF
+","1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund- past charge
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DBS- FUN- STL- MON- FTR- CRC- F12,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,RED,"1. create a funded plan
+2 run processing request Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger>Payments Operations> create-payment-invoice
+5. in request body insert:
+   externalInvoicedId: string (any value)
+6. run the request
+7. open Swagger>Payments Operations> invoiced
+8. in request body insert:
+    paymentRecordId: insert FND record's id
+    invoiceId: the invoice id from create-payment-invoice
+9. run the request
+10. verify record's status changed to ""Invoiced""
+11. perform a full refund: 
+12. go to mongo and see that RED activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+DBS- FUN- STL- MON- FTR- CRC- F09,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF+RED,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a full refund: 
+18. go to mongo and see that RED and REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DBS- FUN- STL- MON- FTR- CRC- F09,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,RED+DEL,"1. create a funded plan
+2. update FND and COL records' status to ""Acknowledged""
+3 perform a partial refund: 
+   - oustanding balance first
+   - last installment
+4. go to mongo and see that RED activity was created with status ""new""
+4. run the processing request on swagger
+5. see new DEL activity was created with status ""new"" and old COL and FND 
+6. see RED and DEL records are marked isDeleted-false
+7. verify new COL and FND records are created after DEL with status ""New"" and are marked isDeleted-true
+8. change FND and COL status to ""Invoiced"" (before DEL)
+9. change DEL status to ""Acknowledged""
+10. run processor and verify FND and COL are not created/ duplicates ",
+DBS- FUN- STL- MON- FTR- CRC- F09,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund- past charge
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+PCO- FUN- STL- MON- FTR- CRC- F01,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a full refund
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+PCO- FUN- STL- MON- FTR- CRC- F01,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund-all options
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+PCO- FUN- STL- MON- FTR- CRC- F06,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"RED+REF
+","1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a full refund: 
+18. go to mongo and see that RED and REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+PCO- FUN- STL- MON- FTR- CRC- F12,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,RED,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund: 
+   - oustanding balance first
+   - last installment
+18. go to mongo and see that RED activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+PCO- FUN- STL- MON- FTR- CRC- F09,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund: 
+   - from past charge first
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- DRC- F01,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,DRC,STL,REF,"1. create a plan for relevant SKU and verify FND and COL are created with status ""New""
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+11. perform a partial refund: 
+   - oustanding balance first
+   - past chares first 
+   - last installment
+12. go to mongo and see that REF activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- CRC- F01,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,1,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a full refund: 
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DPL- FUN- STL- BIW- FTR- DRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Fortnightly,DRC,STL,REF,"1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+11. perform a partial refund: 
+   past charge
+12. go to mongo and see that REF activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- CRC- F09,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,RED,"1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+11. perform a partial refund: 
+   - oustanding balance first
+   - last installment
+12. go to mongo and see that RED activity was created with status ""new""
+13. run the processing request on swagger
+14. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- CRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,REF,"1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a partial refund: 
+   - from past charge first
+18. go to mongo and see that REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"RED+REF
+","1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+15 open Swagger>Payments Operations> invoiced
+ 16. in request body insert:
+    a. paymentRecordId: insert FND and COL record's id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+17. perform a full refund: 
+18. go to mongo and see that RED and REF activity was created with status ""new""
+19. run the processing request on swagger
+20. see DEL activity was NOT created ",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,RED,"1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+16 open Swagger>Payments Operations> invoiced
+in request body insert:
+    a. paymentRecordId: insert FND and COL records id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+16 . Do partial refund ( oustanding balance first/ last installment)
+17. See RED record is created",
+DPL- FUN- STL- MON- FTR- CRC- F12,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"RED+REF
+","1. create a plan for relevant SKU and verify FND and COL are created with status ""New
+2. run processing request on Swagger
+3. verify COL and FND status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/create
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify COL and FND status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify COL and FND status changed to ""Acknowledged""
+12. open Swagger>Payments Operations> create-payment-invoice
+13. in request body insert:
+   externalInvoicedId: string (any value)
+14. run the request
+16 open Swagger>Payments Operations> invoiced
+in request body insert:
+    a. paymentRecordId: insert FND and COL records id
+    b. invoiceId: the invoice id from create-payment-invoice
+    c. run the request
+16 . Do Full refund
+17. See RED and REF records are created",
+,,,,,,,,,,,,,,,,,f,

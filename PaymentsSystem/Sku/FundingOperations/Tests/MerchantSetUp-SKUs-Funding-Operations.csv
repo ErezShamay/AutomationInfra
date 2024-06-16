@@ -1,0 +1,451 @@
+,Merchant Setup,,,,,,,,,,,SKU Per Plan Setup,,,,Activity ,,
+FUNDED SKUs,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,"Funding End 
+Date","Funding Start 
+Date","Funding Triggers
+(In Progress)",IsActive,Fund NonSecured Plans,"Number Of 
+Installments",Scheduled Interval,Card Type,Set First Installment ,Activity Status ,Steps,Notes
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,9999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,"Number of Activities+Collect Number Of Activities
+New","1. create 1 funded plan
+2. verify COL and FND records were created with status ""new""
+3. open funding operations page
+4. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations 
+5. Number of Activities has one activity
+6. Collect Number Of Activities has one activity
+7. No failure icon under ""Do failures exist?""
+8. click on ""Number of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+9. batched page opens- under unbatched tab only one FND activity record is shown in table with status ""New""
+10. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+11. batched page opens- under unbatched tab one COL activity record is shown in table with status ""New""
+
+","Number of Activities should return only FND records:
+FND= activity: ""Fund Action""
+
+Collect Number Of Activities should return the following activities:
+COL= activity:  ""Installment Collection"""
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,9999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,"Number of Activities
+Pending Batch","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new""
+3. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+3. run processing request on Swagger
+4. verify records' statuses changed to ""Pending Batch""
+6. open funding operations page
+7. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+8. click on ""Number of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+9. batched page opens- under unbatched tab only FND activity records are shown in table with status ""PendingBatch""
+10. verify total number of records on batched page matches the number of ""Number of Activities"" on funding operations page","Number of Activities should return only FND records:
+FND= activity: ""Fund Action""
+
+
+"
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,"Collect Number Of Activities
+Pending Batch","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+3. run processing request on Swagger
+4. verify records' statuses changed to ""Pending Batch""
+6. open funding operations page
+7. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+8. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+9. batched page opens- under unbatched tab COL, RED and REF activity records are shown in table with status ""PendingBatch""
+10. verify total number of records on batched page matches the number of ""Collect Number Of Activities"" on funding operations page","Collect Number Of Activities should return the following activities:
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+
+
+"
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,null,0,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",none,true ,NA,4-6,Monthly,CRC,STL,"Failed Records 
+ProcessingFailed","1. create 5 plans for one merchant
+2. verify COL was created with status ""new|
+3. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+4. verify REF records were created
+5. run processing request on Swagger
+6. verify COL status changed to ""Processing Failed""
+7. verify REF status changed to ""PendingBatch""
+7. open funding operations page
+8. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+9. click on failure icon
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-failed-payment-operations
+10. failures page opens with failed records 
+11. failed before integration tab shows records with Conversion Phase ""Process""
+12. failed to integrate tab shows records with Conversion Phase ""CloseBatch""","error- plan not funded
+
+FND= activity: ""Fund Action""
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+
+"
+DBS- FUN- STL- MON- FTR- CRC- F09,DBS,FALSE,TRUE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,"Failed Records 
+ProcessingFailed","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first )
+4. run processing request on Swagger
+5. verify FND status changed to ""Pending Batch""
+6. verify RED, REF and COL status changed to ""ProcessingFailed""
+7. open funding operations page
+8. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+9. click on failure icon
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-failed-payment-operations
+10. failures page opens with failed records  
+12. failed before integration tab shows records with Conversion Phase ""Process""
+13. failed to integrate tab shows records with Conversion Phase ""CloseBatch""
+14. open funding operations page
+14. filter by merchant (same merchant as before)
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+15. click on ""Number of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+16. batched page opens- verify only FND activity records are shown in table with status ""Pending Batch""
+17. verify total number of records on batched page matches the number of ""Number of Activities"" on funding operations page","error- debit on hold
+
+FND= activity: ""Fund Action""
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+
+
+"
+PCO- FUN- STL- MON- FTR- CRC- F12,PCO,TRUE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,10-12,Monthly,CRC,STL,"Collect Number Of Activities
+ProcessingFailed","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+4. verify RED and REF records were created
+5. run processing request on Swagger
+6. verify records' statuses changed to ""Processing Failed""
+7. open funding operations page
+8. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+9. click on failure icon
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-failed-payment-operations
+10. failures page opens with failed records 
+11. failed before integration tab shows records with Conversion Phase ""Process""
+12. failed to integrate tab shows records with Conversion Phase ""CloseBatch""
+","error- funding on hold
+
+FND= activity: ""Fund Action""
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+
+
+"
+DPL- FUN- STL- MON- FTR- CRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Number of Activities
+PendingBatch>Batched","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify records status changed to ""Batched""
+11. open funding operations page
+12. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+13. click on ""Number of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+14. batched page opens- under unbatched tab will appear FND records with new or pending bacth status
+15. batched page opens- under batched tab will appear FND records with Batched, Acknowledged and Invoiced status
+16. verify total number of records on batched page matches the number of ""Number of Activities"" on funding operations page
+","Swagger  
+
+Number of Activities should return only FND records:
+FND= activity: ""Fund Action""
+
+
+"
+DPL- FUN- STL- MON- FTR- CRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Collect Number Of Activities
+PendingBatch>Batched","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify records status changed to ""Batched""
+11. open funding operations page
+12. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+13. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+14. batched page opens- under unbatched tab will appear COL, RED,REF (if exist) records with new or pending bacth status
+15. batched page opens- under batched tab will appear COL,RED,REF (if exist) records with Batched, Acknowledged or Invoiced status
+16. verify total number of records on batched page matches the number of ""Collect Number Of Activities"" on funding operations page","Swagger  
+
+Collect Number Of Activities should return the following activities:
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+
+
+"
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Do failures exist 
+PendingBatch>Batched>AcknowledgedWithError
+","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge firs)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. verify records status changes to ""Pending Batch""
+7. open swagger> Payment Operations> api/payments/created
+8. in request body insert: 
+    batch_id-  ""string"" (any value)
+    success- true
+    internal_id- copy all record id of ""Pending Batch"" records from payment records collection on Mongo 
+9. run the request
+10. verify record's status changed to ""Batched""
+11. open Swagger> Payment Operations> api/payments/settled
+12. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- false
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo (of each record: FND, COL. RED. REF)
+13. run the request
+14. verify record's status changed to ""AcknowledgedWithError"" 
+15. open funding operations page
+16. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+17. click on failure icon
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-failed-payment-operations
+18. failures page opens with failed records 
+19. failed before integration tab shows records with Conversion Phase ""Process""
+20. failed to integrate tab shows records with Conversion Phase ""CloseBatch""","Swagger 
+
+
+FND= activity: ""Fund Action""
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+"
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Number of Activities
+PendingBatch>Batched>Acknowledged
+","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify record's status changed to ""Batched""
+11. open Swagger> Payment Operations> api/payments/settled
+12. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- true
+internal_id- copy record id of record from payment records collection on Mongo (f each record: new FND, new COL)
+13. run the request
+14. verify record's status changed to ""Acknowledged"" 
+15. open funding operations page
+16. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+17. click on ""Number of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+18. batched page opens- under unbatched tab will appear FND records with new or pending bacth status
+19. batched page opens- under batched tab will appear FND records with Batched, Acknowledged or Invoiced status
+20. verify total number of records on batched page matches the number of ""Number of Activities"" on funding operations page","Swagger 
+
+Number of Activities should return only FND records:
+FND= activity: ""Fund Action""
+"
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Collect Number Of Activities
+PendingBatch>Batched>Acknowledged
+","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify record's status changed to ""Batched""
+11. open Swagger> Payment Operations> api/payments/settled
+12. in request body insert: 
+batch_id-  ""string"" (the same batch id from ""Batched"" step )
+success- true
+internal_id- copy record id of record from payment records collection on Mongo (f each record: new FND, new COL))
+13. run the request
+14. verify record's status changed to ""Acknowledged"" 
+15. open funding operations page
+16. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+17. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+18. batched page opens- under unbatched tab will appear FND records with new or pending bacth status
+19. batched page opens- under batched tab will appear FND records with Batched, Acknowledged or Invoiced status
+20. verify total number of records on batched page matches the number of ""Collect Number Of Activities"" on funding operations page","Swagger 
+
+Collect Number Of Activities should return the following activities:
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+"
+DPL- FUN- STL- BIW- FTR- CRC- F03,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,2-3,Fortnightly,CRC,STL,"Number of Activities
+Invoiced","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify record's status changed to ""Batched""
+11. open Swagger> Payment Operations> api/payments/settled
+12. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- true
+internal_id- copy record id of record from payment records collection on Mongo (of each record: new FND, new COL)
+13. run the request
+14. verify record's status changed to ""Acknowledged"" 
+15. open funding operations page
+16. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+17. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+18. batched page opens- under unbatched tab will appear FND records with new or pending bacth status
+19. batched page opens- under batched tab will appear FND records with Batched, Acknowledged or Invoiced status
+20. verify total number of records on batched page matches the number of ""Number of Activities"" on funding operations page
+",Swagger 
+,,,,,,,,,,true ,NA,,,,,"Collect Number Of Activities
+Invoiced","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. perform partial refund (from outstanding balance and from past charge first)
+4. verify RED and REF records were created 
+5. run processing request on Swagger
+6. new DEL record with status skipped was created+ new COL and FND 
+7. open Swagger> Payment Operations> api/payments/created
+8  in request body insert:  
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" records from payment records collection on Mongo (of each record: new FND, new COL)
+9. run the request
+10. verify record's status changed to ""Batched""
+11. open Swagger> Payment Operations> api/payments/settled
+12. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- true
+internal_id- copy record id of record from payment records collection on Mongo (of each record: new FND, new COL)
+13. run the request
+14. verify record's status changed to ""Acknowledged"" 
+15. open Swagger>Payments Operations> invoiced
+16. in request body insert:
+    paymentRecordId: insert records id from Acknowledged status 
+    invoiceId: the invoice id from create-payment-invoice
+17. run the request
+18. verify record's status changed to ""Invoiced""
+19. open funding operations page
+20. filter by merchant 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+21. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+22. batched page opens- under unbatched tab will appear FND records with new or pending bacth status
+23. batched page opens- under batched tab will appear FND records with Batched, Acknowledged or Invoiced status
+24. verify total number of records on batched page matches the number of ""Collect Number Of Activities"" on funding operations page",
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Collect Number Of Activities
+(CHB)","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. run processing request on Swagger
+4. verify records status changed to ""Pending Batch""
+5. select one plan from the 5 that were made and send a chargeback request on postman (written in notes column)
+   in request body change relavant data and send the request:   
+   - reversalRefNum- rendom 12-22 digits number (should be unique for every new dispute)
+   - reversalReason- Chargeback_Merchant_Liability
+   - referenceNumber- captured transaction id 
+   - invoiceAmount- negative installment amount
+   - Status- NEW
+6. on admin portal- go to chargeback> open relevant plan> click on ""set liability"" button, select ""merchant"" and click ""ok""
+7. on mongo- verify new CHB activity was created 
+8. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+9. verify RED and REF records were created
+10. open funding operations page
+11. filter by merchant
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+12. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+13. batched page opens- verify COL, RED and REF activity records are shown in table with status ""PendingBatch""
+14. verify total number of records on batched page matches the number of ""Collect Number Of Activities"" on funding operations page","Chargeback activities must me done on BlueSnap MOR
+
+POST request URL: 
+https://notifications.sandbox.splitit.com/api/notifications/bluesnap
+
+request body:
+title=Mabas&transactionType=CHARGEBACK&untilDate=05/25/2023 08:55 AM&reversalRefNum=125021707220202590087611&reversalReason=Chargeback_Merchant_Liability&referenceNumber=1059292742&invoiceAmount=-500&transactionDate=05/30/2023 07:25&cbStatus=NEW
+
+-----------------
+Collect Number Of Activities should return the following activities:
+COL= activity:  ""Installment Collection""
+RED= activity: ""Reduced Plan Amount (non-cash Refund)""
+REF= acticity: ""Refund (cash refund)""
+CHB=  activity: ""Chargeback Collection, Merchant Liable""
+
+
+"
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Number of Activities
+(CHB+ RPR)","1. create 5 plans for one merchant
+2. verify COL and FND records were created with status ""new|
+3. run processing request on Swagger
+4. verify records status changed to ""Pending Batch""
+5. select one plan from the 5 that were made and send a chargeback request on postman (written in notes column)
+in request body change relavant data and send the request:   
+   - reversalRefNum- rendom 12-22 digits number (should be unique for every new dispute)
+   - reversalReason- Chargeback_Merchant_Liability
+   - referenceNumber- captured transaction id 
+   - invoiceAmount- negative installment amount
+   - Status- NEW
+6. on admin portal- go to chargeback> open relevant plan> click on ""set liability"" button, select ""merchant"" and click ""ok""
+7. on mongo- verify new CHB activity was created 
+8. wait 120 seconds and send the chargeback request again but change the status to ""Completed_Won""
+9. on mongo- verify new PRP activity was created
+10. perform partial refund (from outstanding balance and from outstanding balance and from past charge first)
+11. verify RED and REF records were created
+12. open funding operations page
+13. filter by merchant
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-funding-operations
+14. click on ""Collect Number Of Activities"" 
+post: https://payments.sandbox.splitit.com/api/splitit-operations/get-payment-records
+15. batched page opens- verify COL, RED and REF activity records are shown in table with status ""PendingBatch""
+16. verify total number of records on batched page matche the number of ""Collect Number Of Activities"" on funding operations page","Chargeback activities must me done on BlueSnap MOR
+
+POST request URL: 
+https://notifications.sandbox.splitit.com/api/notifications/bluesnap
+
+request body:
+title=Mabas&transactionType=CHARGEBACK&untilDate=05/25/2023 08:55 AM&reversalRefNum=125021707220202590087611&reversalReason=Chargeback_Merchant_Liability&referenceNumber=1059292742&invoiceAmount=-500&transactionDate=05/30/2023 07:25&cbStatus=NEW
+
+
+-------------
+
+
+Number of Activities should return only FND records:
+FND= activity: ""Fund Action""
+RPR= activity: ""Representment/Chargeback Won, Merchant Liable"""

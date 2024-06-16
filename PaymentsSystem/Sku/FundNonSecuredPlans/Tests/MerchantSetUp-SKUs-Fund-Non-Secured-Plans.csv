@@ -1,0 +1,11 @@
+ ,,,,,,,,,,,,SKU Per Plan Setup,,,,
+SKUs,Monetary Flow,Funding On Hold,Debit OnHold,Risk Rating,Credit Line,Reserve Pool,Funding End Date,Funding Start Date,"Funding Triggers
+(In Progress)",IsActive,FundNonSecuredPlans,Number Of Installments,Scheduled Interval,Card Type,Set First Installment ,Notes
+MER- UNF- STL- MON- FTR- CRC- U03,MER,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NO,2-3,Monthly,DRC,STL,"Plan Strategy: non secured
+COL is created with status ""New"""
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,YES,7-9,Monthly,CRC,STL,"Plan Strategy: non secured
+FND and COL are created with status ""New"""
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,"Plan Strategy: non secured
+FND and COL are created with status ""New"""
+MER- FUN- STL- MON- FTR- CRC- F12,MER,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NO,10-12,Monthly,DRC,STL,"Plan Strategy: any secured strategy
+FND and COL are created with status ""New"""

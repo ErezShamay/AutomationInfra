@@ -1,0 +1,115 @@
+,Merchant Setup,,,,,,,,,,,SKU Per Plan Setup,,,,Processing,,
+UNFUNDED SKUs,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,Funding End Date,Funding Start Date,"Funding Triggers
+(In Progress)",IsActive,FundNonSecuredPlans,Number Of Installments,Scheduled Interval,Card Type,Set First Installment ,Activity Status ,Steps ,Notes
+MER- UNF- STL- MON- FTR- CRC- U03,MER,FALSE,FALSE,null,0,0,null,null,none,true ,NA,2-3,Monthly,CRC,STL,PendingBatch>Batched>Acknowledged,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger> payment operations> api/payments/created
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify record's status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify record's status changed to """"Acknowledged""","Swagger  
+
+Verify that each status is created (PendingBatch, Batched, Acknowledged)"
+MER- UNF- STL- BIW- FTR- CRC- U03,MER,FALSE,FALSE,null,0,0,null,null,none,true ,NA,2-3,Fortnightly,CRC,STL,PendingBatch>Batched>AcknowledgedWithError,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/created
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify record's status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- false
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify record's status changed to """"AcknowledgedWithError""","Swagger 
+
+Verify that each status is created (PendingBatch, Batched, AcknowledgedWithError)"
+,,,,,,,,,,,,,,,,,,
+FUNDED SKUs,Monetary Flow,Funding On Hold,Debit On Hold,Risk Rating,Credit Line,Reserve Pool,"Funding End 
+Date","Funding Start 
+Date","Funding Triggers
+(In Progress)",,,"Number Of 
+Installments",Scheduled Interval,Card Type,Set First Installment ,Activity Status ,Steps ,Notes
+MER- FUN- STL- MON- FTR- CRC- F06,MER,FALSE,FALSE,null,0,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",none,true ,NA,4-6,Monthly,CRC,STL,ProcessingFailed,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify record's status changed to ""ProcessingFailed""",error- plan not funded
+MER- FUN- STL- MON- FTR- CRC- F09,MER,FALSE,FALSE,Low,2000,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,ProcessingFailed,"1. create a plan for relevant SKU with plan amount greater than credit line (greater than 2000)
+2. run processing request on Swagger
+3. verify record's status changed to ""ProcessingFailed""",error- exceeded credit line
+DBS- FUN- STL- MON- FTR- CRC- F09,DBS,FALSE,TRUE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,ProcessingFailed,"1. create a plan for relevant SKU
+2. verify COL and FND records were created
+2. run processing request on Swagger
+3. verify COL record's status changed to ""ProcessingFailed""
+5. verify FND record's status changed to ""PendingBatch""",error- debit on hold
+PCO- FUN- STL- MON- FTR- CRC- F09,PCO,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,7-9,Monthly,CRC,STL,ProcessingFailed,"1. create a plan for relevant SKU
+2. verify COL and FND records were created
+2. run processing request on Swagger
+3. verify COL record's status changed to ""ProcessingFailed""
+5. verify FND record's status changed to ""ProcessingFailed""",error- funding on hold
+DPL- FUN- STL- MON- FTR- CRC- F06,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,PendingBatch>Batched>Acknowledged,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger> Payment Operations> api/payments/created
+5. in request body insert: 
+   batch_id-  ""string"" (any value)
+   success- true
+   internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify record's status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""batched"" step )
+success- true
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify record's status changed to ""Acknowledged""","Swagger  
+
+Verify that each status is created (PendingBatch, Batched, Acknowledged)"
+DBS- FUN- STL- MON- FTR- CRC- F06,DBS,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,4-6,Monthly,CRC,STL,PendingBatch>Batched>AcknowledgedWithError,"1. create a plan for relevant SKU
+2. run processing request on Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open swagger> Payment Operations> api/payments/created
+5. in request body insert: 
+    batch_id-  ""string"" (any value)
+    success- true
+    internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+6. run the request
+7. verify record's status changed to ""Batched""
+8. open Swagger> Payment Operations> api/payments/settled
+9. in request body insert: 
+batch_id-  ""string"" (the same bathc id from ""Batched"" step )
+success- false
+internal_id- copy record id of a ""Pending Batch"" record from payment records collection on Mongo
+10. run the request
+11. verify record's status changed to """"AcknowledgedWithError"" ","Swagger 
+
+Verify that each status is created (PendingBatch, Batched, AcknowledgedWithError)"
+DPL- FUN- STL- BIW- FTR- CRC- F03,DPL,FALSE,FALSE,Low,9999999999,0,null,"ISODate(""2023-03-29T00:00:00.000+0000"")",PlanActivation,true ,NA,2-3,Fortnightly,CRC,STL,Invoiced,"1. create a plan for relevant SKU
+2 run processing request Swagger
+3. verify record's status changes to ""Pending Batch""
+4. open Swagger>Payments Operations> create-payment-invoice
+5. in request body insert:
+   externalInvoicedId: string (any value)
+6. run the request
+7. open Swagger>Payments Operations> invoiced
+8. in request body insert:
+    paymentRecordId: insert records id from Acknowledged status 
+    invoiceId: the invoice id from create-payment-invoice
+9. run the request
+10. verify record's status changed to ""Invoiced""
+   ",Swagger 
